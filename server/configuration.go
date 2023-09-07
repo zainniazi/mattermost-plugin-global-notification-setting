@@ -18,6 +18,7 @@ import (
 // If you add non-reference types to your configuration struct, be sure to rewrite Clone as a deep
 // copy appropriate for your types.
 type configuration struct {
+	ChangePreferences bool
 }
 
 // Clone shallow copies the configuration. Your implementation may require a deep copy if
@@ -79,5 +80,25 @@ func (p *Plugin) OnConfigurationChange() error {
 
 	p.setConfiguration(configuration)
 
+	// Check if the ChangePreferences attribute is set
+	if configuration.ChangePreferences {
+		p.changeUserNotificationPreferences()
+		configuration.ChangePreferences = false // Reset after applying changes
+		p.saveConfiguration(configuration)      // Store the updated configuration
+	}
+
 	return nil
+}
+
+func (p *Plugin) saveConfiguration(cfg *configuration) {
+	// This will persist the plugin's configuration back to the Mattermost server.
+	configMap := cfg.ToMap()
+	p.API.SavePluginConfig(configMap)
+}
+
+func (c *configuration) ToMap() map[string]interface{} {
+	configMap := make(map[string]interface{})
+	configMap["ChangePreferences"] = c.ChangePreferences
+	// Add other fields of the configuration struct similarly
+	return configMap
 }

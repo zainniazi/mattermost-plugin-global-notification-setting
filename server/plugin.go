@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/plugin"
 )
 
@@ -23,6 +24,51 @@ type Plugin struct {
 // ServeHTTP demonstrates a plugin that handles HTTP requests by greeting the world.
 func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Hello, world!")
+}
+
+func (p *Plugin) changeUserNotificationPreferences() {
+	users, _ := p.API.GetUsers(&model.UserGetOptions{})
+	for _, user := range users {
+		prefs := []model.Preference{
+			{
+				UserId:   user.Id,
+				Category: model.PreferenceCategoryNotifications,
+				Name:     "desktop_threads",
+				Value:    "all",
+			},
+			{
+				UserId:   user.Id,
+				Category: model.PreferenceCategoryNotifications,
+				Name:     "email_threads",
+				Value:    "all",
+			},
+			{
+				UserId:   user.Id,
+				Category: model.PreferenceCategoryNotifications,
+				Name:     "push",
+				Value:    "all",
+			},
+			{
+				UserId:   user.Id,
+				Category: model.PreferenceCategoryNotifications,
+				Name:     "push_status",
+				Value:    "online",
+			},
+			{
+				UserId:   user.Id,
+				Category: model.PreferenceCategoryNotifications,
+				Name:     "push_threads",
+				Value:    "all",
+			},
+			{
+				UserId:   user.Id,
+				Category: model.PreferenceCategoryNotifications,
+				Name:     model.PreferenceNameEmailInterval, // Adjusted to match provided path
+				Value:    "30",                              // Send email notifications immediately
+			},
+		}
+		p.API.UpdatePreferencesForUser(user.Id, prefs)
+	}
 }
 
 // See https://developers.mattermost.com/extend/plugins/server/reference/

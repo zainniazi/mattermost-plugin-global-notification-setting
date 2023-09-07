@@ -1,5 +1,5 @@
 {
-    "id": "com.mattermost.plugin-starter-template",
+    "id": "com.mattermost.global-notification-setting",
     "name": "Plugin Starter Template",
     "description": "This plugin serves as a starting point for writing a Mattermost plugin.",
     "homepage_url": "https://github.com/mattermost/mattermost-plugin-starter-template",
@@ -21,8 +21,15 @@
         "bundle_path": "webapp/dist/main.js"
     },
     "settings_schema": {
-        "header": "",
-        "footer": "",
-        "settings": []
+        "header": "Notification Preferences Settings",
+        "footer": "Change notification preferences for all users from these settings.",
+        "settings": [
+            {
+                "key": "ChangePreferences",
+                "display_name": "Change Notification Preferences",
+                "type": "bool",
+                "help_text": "Enable to change notification preferences for all users."
+            }
+        ]
     }
 }
